@@ -16,6 +16,30 @@
 
     (window || unsafeWindow).adminToolsFunction = adminFunctions;
 
+    var addButton = function(name, action){
+        var button = document.createElement("button");
+        button.type = "button";
+        button.className = "button button-secondary bbcode-latex";
+        button.name = name;
+        button.value = name;
+        button.onclick = action;
+        button.innerText = name;
+        document.getElementsByClassName("bbcode-latex")[0].closest("div").appendChild(button);
+    };
+
+    var replacePostContent = function(replacer){
+        var postBox = document.getElementById("message");
+        var originalValue = postBox.value;
+        var newValue = replacer(originalValue);
+        postBox.value = newValue;
+    };
+
+    var replaceInLatexTags = function(replacer){
+        replacePostContent(function(postBody){
+            return postBody.replace(/[[]latex].*?[[]\/latex]/g, replacer);
+        });
+    };
+
     (function addModificationReasons(){
         adminFunctions.addModificationReason = function(reason){
             document.getElementById("edit_reason").value += reason;
@@ -49,22 +73,55 @@
     })();
 
     (function addButonToReplaceMultiplicationSign(){
-        adminFunctions.replaceMultiplication = function(){
-            var postBox = document.getElementById("message");
-            var originalValue = postBox.value;
-            var newValue = originalValue.replace(/[[]latex].*?[[]\/latex]/g, function(match, $1){
-                return match.replace(/[*]/g, "\\cdot");
+        addButton("cdot", function(){
+            replaceInLatexTags(function(match, $1){
+                return match.replace(/[*]/g, " \\cdot ");
             });
-            postBox.value = newValue;
+        });
+    })();
+
+    (function addButonToReplaceTypicalFunctions(){
+        var replaceFunctionWithNonLettersNonSlashAround = function(content, functionName, replacement){
+            var nonLetter = "([^a-zA-Z\\\\])";
+            return content.replace(new RegExp(nonLetter + functionName + nonLetter, 'g'), function(match, p1, p2){
+                return p1 + replacement + p2;
+            });
         }
 
-        var button = document.createElement("button");
-        button.type = "button";
-        button.className = "button button-secondary bbcode-latex";
-        button.name = "replacemultiplication";
-        button.value = "cdot";
-        button.onclick = adminFunctions.replaceMultiplication;
-        button.innerText = "cdot";
-        document.getElementsByClassName("bbcode-latex")[0].closest("div").appendChild(button);
+        var replacements = [
+            {old: "sin", new: "\\sin"},
+            {old: "cos", new: "\\cos"},
+            {old: "log", new: "\\log"}
+        ];
+        addButton("sin", function(){
+            replaceInLatexTags(function(match, $1){
+                var original = match;
+                replacements.map(function(replacement){
+                    original = replaceFunctionWithNonLettersNonSlashAround(original, replacement.old, " " + replacement.new + " ");
+                });
+
+                return original;
+            });
+        });
+    })();
+
+    (function addButtonToReplaceParens(){
+        var replaceParentWithNoPrefix = function(content, prefix, character, replacement){
+            var prefixRegExp = "("+ prefix.split("").map(function(c){
+                return "[^" + c.replace("\\", "\\\\") + "]";
+            }).join("") + ")";
+            console.log(prefixRegExp);
+            return content.replace(new RegExp(prefixRegExp + character, 'g'), function(match, prefix){
+                return prefix + " " + replacement + " ";
+            });
+        }
+
+        addButton("nawiasy", function(){
+            replaceInLatexTags(function(match, $1){
+                var current = replaceParentWithNoPrefix(match, "\\left", "[(]", "\\left(");
+                current = replaceParentWithNoPrefix(current, "\\right", "[)]", "\\right)");
+                return current;
+            });
+        });
     })();
 })();
