@@ -27,8 +27,12 @@
         document.getElementsByClassName("bbcode-latex")[0].closest("div").appendChild(button);
     };
 
+    var getPostBox = function(){
+        return document.getElementById("message");
+    };
+
     var replacePostContent = function(replacer){
-        var postBox = document.getElementById("message");
+        var postBox = getPostBox();
         var originalValue = postBox.value;
         var newValue = replacer(originalValue);
         postBox.value = newValue;
@@ -123,5 +127,49 @@
                 return current;
             });
         });
+    })();
+
+    (function watchForDoubleDollar(){
+        var postBox = getPostBox();
+        var opening = "[latex]";
+        var openingReversed = opening.split("").reverse().join("");
+        var closing = "[/latex]";
+        var closingReversed = closing.split("").reverse().join("");
+        postBox.oninput = function(){
+            var content = postBox.value;
+            var caretPosition = postBox.selectionStart;
+            if(caretPosition <= 0 || content[caretPosition - 1] != '$' || content[caretPosition - 2] != '$'){
+                return;
+            }
+
+            var prefix = content.substring(0, caretPosition - 2);
+            var prefixReversed = prefix.split("").reverse().join("");
+            var lastOpeningInPrefix = prefixReversed.indexOf(openingReversed);
+            var lastClosingInPrefix = prefixReversed.indexOf(closingReversed);
+            var isInOpenedTag = lastOpeningInPrefix != -1 && (lastClosingInPrefix == -1 || lastOpeningInPrefix < lastClosingInPrefix);
+
+            var suffix = content.substring(caretPosition);
+            var firstOpeningInSuffix = suffix.indexOf(opening);
+            var firstClosingInSuffix = suffix.indexOf(closing);
+            var isInClosedTag = firstClosingInSuffix != -1 && (firstOpeningInSuffix == -1 || firstClosingInSuffix < firstOpeningInSuffix);
+
+            var changed = false;
+            if(!isInOpenedTag && !isInClosedTag){
+                prefix += opening;
+                changed = true;
+            }else if(isInOpenedTag && !isInClosedTag){
+                prefix += closing;
+                changed = true;
+            }else if(!isInOpenedTag && isInClosedTag){
+                prefix += opening;
+                changed = true;
+            }
+
+            if(changed){
+                postBox.value = prefix + suffix;
+                caretPosition = prefix.length;
+                postBox.setSelectionRange(caretPosition, caretPosition);
+            }
+        }
     })();
 })();
