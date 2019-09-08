@@ -55,9 +55,10 @@
             { explanation: "Obrazki zamiast zapisu w LaTeX-u.", reason: "Skany" },
             { explanation: "Nie dubluj tematów.", reason: "Duplikat" },
             { explanation: "Symbol mnożenia to \\cdot", reason: "Mnożenie" },
-            { explanation: "Funkcje trygonometryczne zapisuj jako \\sin, \\cos itp.", reason: "Funkcje trygonometryczne" },
+            { explanation: "Punkt 2.7 instrukcji LaTeX-a. Funkcje matematyczne należy zapisywać: sinus - \\sin, logarytm - \\log, logarytm naturalny - \\ln itd.", reason: "Funkcje" },
             { explanation: "Skaluj nawiasy przez \\left( i \\right)", reason: "Nawiasy" },
-            { explanation: "Niedozwolone reklamy.", reason: "Reklama" }
+            { explanation: "Niedozwolone reklamy.", reason: "Reklama" },
+            { explanation: "Poprawa wiadomości.", reason: "Poprawa wiadomości" }
         ];
 
         var reasonsElements = reasons.map(function(reason){
