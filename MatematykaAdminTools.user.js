@@ -58,7 +58,8 @@
             { explanation: "Punkt 2.7 instrukcji LaTeX-a. Funkcje matematyczne należy zapisywać: sinus - \\sin, logarytm - \\log, logarytm naturalny - \\ln itd.", reason: "Funkcje" },
             { explanation: "Skaluj nawiasy przez \\left( i \\right)", reason: "Nawiasy" },
             { explanation: "Niedozwolone reklamy.", reason: "Reklama" },
-            { explanation: "Poprawa wiadomości.", reason: "Poprawa wiadomości" }
+            { explanation: "Poprawa wiadomości.", reason: "Poprawa wiadomości" },
+            { explanation: "Temat umieszczony w złym dziale.", reason: "Zły dział" }
         ];
 
         var reasonsElements = reasons.map(function(reason){
