@@ -4,7 +4,7 @@
 // @version      0.1
 // @description  Provides some admin tools for Matematyka.pl missing after migration
 // @author       Adam Furmanek
-// @match        https://matematyka.pl/posting.php?mode=edit*
+// @match        https://*.matematyka.pl/posting.php*
 // @grant        none
 // ==/UserScript==
 
